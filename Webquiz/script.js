@@ -201,6 +201,7 @@ function checkIfEnoughAnswers(){
 }
 function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton){
   let xhr = new XMLHttpRequest();
+  let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/'+ randomQuizID +'/solve'
   xhr.open('POST', url, false);
   xhr.setRequestHeader("Authorization", "Basic " + window.btoa(email+":"+password));
   xhr.setRequestHeader("Content-Type", "application/json");
