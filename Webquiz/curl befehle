@@ -1,0 +1,13 @@
+curl --user s82068@htw-dresden.de:secret -X POST -H "Content-Type: application/json" -d "{\"title\":\"The Java Logo\", \"text\":\"What is depicted on the Java logo?\", \"options\": [\"Robot\", \"Tea leaf\", \"Cup of coffee\", \"Bug\"], \"answer\": [2]}" https://irene.informatik.htw-dresden.de:8888/api/quizzes --data "{\"email\":\"s82068@gmail.com\", \"password\": \"secret\"}"
+
+curl --user s82068@htw-dresden.de:secret -X POST -H "Content-Type: application/json" -d '{"title":"The Java Logo", "text":"What is depicted on the Java logo?", "options": ["Robot", "Tea leaf", "Cup of coffee", "Bug"], "answer": [2]}' https://irene.informatik.htw-dresden.de:8888/api/quizzes --data "{\"email\":\"s82068@gmail.com\", \"password\": \"secret\"}"
+curl --user s82068@htw-dresden.de:secret -X POST -H "Content-Type: application/json" -d '{"title":"Deutsche Netflixserie", "text":"Welche deutsche Netlfixserie hat das höchste IMDB-Rating?", "options": ["Dark", "Barbaren", "Dogs of Berlin", "HTSDO(F)"], "answer": [0]}' https://irene.informatik.htw-dresden.de:8888/api/quizzes --data "{\"email\":\"s82068@gmail.com\", \"password\": \"secret\"}"
+curl --user s82068@htw-dresden.de:secret -X POST -H "Content-Type: application/json" -d '{"title":"Major Gewinner", "text":"Welches CS:GO Team hat die meisten Majors gewonnen?", "options": ["Astralis", "FNATIC", "SK Gaming", "NaVi"], "answer": [0]}' https://irene.informatik.htw-dresden.de:8888/api/quizzes --data "{\"email\":\"s82068@gmail.com\", \"password\": \"secret\"}"
+curl --user s82068@htw-dresden.de:secret -X POST -H "Content-Type: application/json" -d '{"title":"Twitter", "text":"Welche Social-Media Platform will Elon Musk kaufen?", "options": ["Twitter", "Reddit", "Snapchat", "Facebook"], "answer": [0]}' https://irene.informatik.htw-dresden.de:8888/api/quizzes --data "{\"email\":\"s82068@gmail.com\", \"password\": \"secret\"}"
+curl --user s82068@htw-dresden.de:secret -X POST -H "Content-Type: application/json" -d '{"title":"Valve", "text":"In welcher Stadt hat Valve ihren Firmensitz?", "options": ["Seattle", "New York", "Miami", "Los Angeles"], "answer": [0]}' https://irene.informatik.htw-dresden.de:8888/api/quizzes --data "{\"email\":\"s82068@gmail.com\", \"password\": \"secret\"}"
+
+curl --user s82068@htw-dresden.de:secret -X POST -H "Content-Type: application/json" -d '{"title":"Twitter", "text":"Welche Social-Media Platform will Elon Musk kaufen?", "options": ["Twitter", "Reddit", "Snapchat", "Facebook"], "answer": [0]}' https://irene.informatik.htw-dresden.de:8888/api/quizzes --data "{\"email\":\"s82068@gmail.com\", \"password\": \"secret\"}"
+
+
+curl --user test@gmail.com:secret -X POST -H 'Content-Type: application/json' \
+http://localhost:8888/api/quizzes/1/solve --data '[]'

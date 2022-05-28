@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css" integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB" crossorigin="anonymous">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js" integrity="sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/vexflow/build/cjs/vexflow.js"></script>
+    
+    <title>Lernprogramm</title>
+
+
+</head>
+<body>
+    <div class="header">
+        <img class="img-banner" src="bilder/banner.png">
+    </div>
+
+    <div class="topnav-container">
+        <ul class="top-navbar">
+            <button id="btn-1" href="Mathe">Mathe</button>
+            <button id="btn-2" href="Internettechnologien">Internettechnologien</button>
+            <button id="btn-3" href="Allgemein">Allgemein</button>
+            <button id="btn-4" href="Noten">Online Fragen</button>
+        </ul>
+    </div>
+    
+
+    <div class="container-1"> 
+            <ul class="sidenav">
+                <li><a id="link-1" href="#">About</a></li>
+                <li><a id="link-2" href="#">Services</a></li>
+                <li><a id="link-3" href="#">Clients</a></li>
+                <li><a id="link-4" href="#">Contact</a></li>
+            </ul>
+        <div class="inhalt-container" id="inhaltcontainer">
+            <div id="Progress">
+                <div id="Bar"></div>
+            </div>
+            <label id="label-1" type="type">Bitte wähle ein Thema aus!</label>
+            <div class="button-container">
+                <div class="button-oben">
+                    <button id="btn-5" class="antwort-btn" type="button1">A</button>
+                    <button id="btn-6" class="antwort-btn" type="button2">B</button>
+                </div>
+                <div class="button-unten">
+                    <button id="btn-7" class="antwort-btn" type="button3">C</button>
+                    <button id="btn-8" class="antwort-btn" type="button4">D</button>
+                </div>
+                </div>
+            </div> 
+        <div id="stats-container" class="statscontainer hide">
+            <label id="label-2" type="type"></label>
+            <button id="btn-9" type="butto">Neustart</button>
+        </div>
+    </div>
+    <script>
+        // Service Worker registrieren für PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log(reg))
+                    .catch(err => console.log(err));
+            }
+    </script>
+</body>
+</html>
