@@ -259,15 +259,11 @@ function loadStats(){
   inhaltcontainer.classList.add("hide")
   let statsString = null
   if(topicSaver != "online-fragen"){
-    console.log("hier")
-    
     statsString = "Du hast " + rightAnswerClickedVariable + " richtige Antworten und " + wrongAnswerClickedVariable +  " falsche Antworten, bei insgesamt "+ topicSaver.length +" Fragen."
   } else {
-    console.log("hier2")
-    console.log(answerButtonClicked)
     statsString = "Du hast " + rightAnswerClickedVariable + " richtige Antworten und " + wrongAnswerClickedVariable +  " falsche Antworten, bei insgesamt "+ numberOfAnswersClicked++ +" Fragen."
   }
-  console.log("hier3")
+
   label2.innerHTML = statsString
 }
 
