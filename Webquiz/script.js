@@ -168,7 +168,7 @@ function answerButtonClicked(element){
 //und button werden wieder normal
 function rightAnswerClickedFunction(btn5){
   btn5.style.backgroundColor = 'green' 
-  disableAnswerButtons() 
+  disableAnswerButtons() //damit nicht mehrere fragen als beantwortet zählen, obwohl es eigentlich bloß 1 war
   setTimeout(function(){ //damit man sich die richtige antwort anschauen kann, wird die nächste frage nach einer sekunde geladen
     btn5.style.backgroundColor = ''
     loadPossibleQuestions(topicSaver)
@@ -187,7 +187,7 @@ function rightAnswerClickedFunction(btn5){
 function wrongAnswerClickedFunction(pressedButton){
   btn5.style.backgroundColor = 'green'
   pressedButton.style.backgroundColor = 'red'
-  disableAnswerButtons()
+  disableAnswerButtons() 
   setTimeout(function(){
     btn5.style.backgroundColor = ''
     pressedButton.style.backgroundColor = ''
@@ -222,6 +222,7 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
   let resultJSON = JSON.parse(xhr.responseText)
   //wenn antwort falsch ist, dann tut es vom prinzip, dass gleiche wie bei lokal, bloß ohne die richtige antwort zu zeigen
   // -> bewegt progress bar, zählt richtig/falsch und beendet evtl quiz
+  disableAnswerButtons()
   if(resultJSON.success == false){
     pressedButton.style.backgroundColor = 'red'
     //richtige anwort wird atm nicht gezeigt, da dafür neue abfragen nötig wären 
@@ -267,6 +268,7 @@ function moveProgressBar(){
 function loadStats(){ 
   statscontainer.classList.remove("hide")
   inhaltcontainer.classList.add("hide")
+  btn9.disabled = true
   let statsString = null
   if(topicSaver != "online-fragen"){
     statsString = "Du hast " + rightAnswerClickedVariable + " richtige Antworten und " + wrongAnswerClickedVariable +  " falsche Antworten, bei insgesamt "+ topicSaver.length +" Fragen."
@@ -274,6 +276,9 @@ function loadStats(){
     statsString = "Du hast " + rightAnswerClickedVariable + " richtige Antworten und " + wrongAnswerClickedVariable +  " falsche Antworten, bei insgesamt "+ numberOfAnswersClicked++ +" Fragen."
   }
   label2.innerHTML = statsString
+  setTimeout(function(){
+    btn9.disabled = false
+  }, 1500);
 }
 
 //deaktiveren der button, damit es zu keinen bugs kommt
