@@ -1,6 +1,3 @@
-//Idee dafür, das nicht bloß erster Button richtig ist 
-//neues feld in json und button mit richtiger zuerst randomisiert belegen und dann den rest 
-
 //erstellen der Verbindung aus vo HTML und JS
 let topicSaver = null
 let integerSaver = null
@@ -74,6 +71,7 @@ function topicButtonClicked(element){
 function loadPossibleQuestionsREST() {
   topicSaver = "online-fragen"
   //bereitet die ajax abfrage vor als HMTL Request
+  //der request braucht einen genauen aufbau, welcher auf der in der dokumentation angegeben wird
   randomQuizID = Math.floor((Math.random() * 4) +70) //Zahl noch noch nicht richtig     74, 73, 72,71, 70
   let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/' + randomQuizID.toString() //url des servers mit Fragen ID
   let xhr = new XMLHttpRequest();
