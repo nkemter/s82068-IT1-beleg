@@ -1,6 +1,7 @@
 //erstellen der Verbindung aus vo HTML und JS
-let topicSaver = null
-let integerSaver = null
+let topicSaver
+let selectedTopic
+let integerSaver 
 let numberOfAnswersClicked = 0
 let rightAnswerClickedVariable = 0
 let wrongAnswerClickedVariable = 0
@@ -50,22 +51,22 @@ function topicButtonClicked(element){
   }
   //speichert das thema in variabeln
   if(pressedButtonTopic == btn1){
-    const selectedTopic = quizQuestion["teil-mathe"]
+    selectedTopic = quizQuestion["teil-mathe"]
     shuffleQuestions(selectedTopic)
     loadPossibleQuestions(selectedTopic)
   } 
   else if(pressedButtonTopic == btn2){
-    const selectedTopic = quizQuestion["teil-internettechnologien"]
+    selectedTopic = quizQuestion["teil-internettechnologien"]
     shuffleQuestions(selectedTopic)
     loadPossibleQuestions(selectedTopic)
   } 
   else if (pressedButtonTopic == btn3){ 
-    const selectedTopic = quizQuestion["teil-allgemein"]
+    selectedTopic = quizQuestion["teil-allgemein"]
     shuffleQuestions(selectedTopic)
     loadPossibleQuestions(selectedTopic)
   }
   else if(pressedButtonTopic == btn4){
-    const selectedTopic = quizQuestion["online-fragen"]
+    selectedTopic = quizQuestion["online-fragen"]
     loadPossibleQuestionsREST()
   }
 }
@@ -121,8 +122,6 @@ function loadPossibleQuestionsREST() {
   btn8.innerHTML = resultJSON.options[3]
 
   let array = [resultJSON.text, resultJSON.options[0] ]
-  console.log(resultJSON.options[0] + "antworten")
-  
 }
 
 //lädt fragen aus lokalen json und befüllt damit das label und die button
@@ -132,10 +131,8 @@ function loadPossibleQuestions(selectedTopic){
   //im moment ist die frage immer falsch
 
   topicSaver = selectedTopic
-  console.log(topicSaver + "thema2")
   //diese funktion und die speziellen string werden hier benötigt damit die 
   //mathe fragen "mathematisch" angezeigt werden
-  console.log(topicSaver + "thema3")
   if(topicSaver == quizQuestion["teil-mathe"]){
 
     const questionString = "$$" + selectedTopic[questionIndex].a + "$$" //randomInteger
@@ -158,15 +155,16 @@ function loadPossibleQuestions(selectedTopic){
       ]
   });
   } else{
-    console.log(selectedTopic[randomInt].a + "frage")
-    const questionString = topicSaver[questionIndex].a
+   /* console.log(selectedTopic[randomInt].a + "frage------------") */
+    const questionString = selectedTopic[questionIndex].a
+    console.log(selectedTopic[questionIndex].a+ "frage")
+    console.log(selectedTopic[questionIndex].c + "antwort")
     label1.innerHTML = questionString
-    btn5.innerHTML = topicSaver[questionIndex].l[0]
-    btn6.innerHTML = topicSaver[questionIndex].l[1]
-    btn7.innerHTML = topicSaver[questionIndex].l[2]
-    btn8.innerHTML = topicSaver[questionIndex].l[3]    
+    btn5.innerHTML = selectedTopic[questionIndex].l[0]
+    btn6.innerHTML = selectedTopic[questionIndex].l[1]
+    btn7.innerHTML = selectedTopic[questionIndex].l[2]
+    btn8.innerHTML = selectedTopic[questionIndex].l[3]    
   }
-  questionIndex++
 }
 
 
@@ -181,9 +179,7 @@ function answerButtonClicked(element){
   } 
   //je nach online und lokal werden unterschiedliche funktionen nach dem anklicken eines buttons aufgerufen, da
   //sich sich die "reaktionen" leicht unterscheiden
-  console.log(topicSaver + "thema")
   if(topicSaver === "online-fragen"){
-    console.log(topicSaver + "thema")
     //bei online fragen muss sich die antwort kurz gemerkt werden, damit diese an den server geschickt werden kann
     //hier als int (eigentlich string), damit es in die url eingefügt werden kann 
     if(pressedButton == btn5){
@@ -198,10 +194,11 @@ function answerButtonClicked(element){
     sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton)
     return
   } else{
-    console.log(topicSaver + "thema")
-    console.log(topicSaver[randomInt].c + "lösung")
+
+    //console.log(selectedTopic[questionIndex].c + "lösung")
+
     console.log(pressedButton.innerHTML + "gedrückt")
-    if(pressedButton.innerHTML != topicSaver[randomInt].c){ //bedingung ist falsch
+    if(pressedButton.value == pressedButton.innerHTML){//selectedTopic[questionIndex].c){ //bedingung ist falsch
       console.log("richtige antwort")
       rightAnswerClickedFunction(pressedButton)
     } else{
@@ -226,6 +223,7 @@ function rightAnswerClickedFunction(pressedButton){
   //außerdem wird die progress bar aktualisiert und für die statistik der index für richtige fragen hochgesetzt
   numberOfAnswersClicked++
   rightAnswerClickedVariable++
+  questionIndex++
   moveProgressBar()
   //außerdem checkt es, ob "genug" fragen beantwortet wurden sind und wenn ja lädt es die statistik
   checkIfEnoughAnswers()
@@ -234,7 +232,7 @@ function rightAnswerClickedFunction(pressedButton){
 //falscher antwort gedrückt 
 //funktional genau wie bei den richtigen antworten, bloß das hier die falsche antwort hochgezählt wird
 function wrongAnswerClickedFunction(pressedButton){
-  pressedButton.style.backgroundColor = 'green'
+  //pressedButton.style.backgroundColor = 'green' wenn richtiges erkannt, dann muss es grün sein 
   pressedButton.style.backgroundColor = 'red'
   disableAnswerButtons() 
   setTimeout(function(){
@@ -245,6 +243,7 @@ function wrongAnswerClickedFunction(pressedButton){
   }, 1000);
   numberOfAnswersClicked++
   wrongAnswerClickedVariable++
+  questionIndex++
   moveProgressBar()
   checkIfEnoughAnswers()
 }
@@ -384,7 +383,7 @@ const quizQuestion = {
     "teil-allgemein": [
       {"a":"Karl der Große, Geburtsjahr", "l":["747","828","650","1150"],"c":"0"},
       {"a":"Wer ist der aktuelle Schachweltmeister?", "l":["Magnus Carlsen","Hikaru Nakamura","Ding Liren","Fabiano Caruana"],"c":"0"},
-      {"a":"In welchem Land hat Deutschland 2014 die Fußball-WM gewonnen?", "l":["Brasilien", "Frankreich", "Katar",],"c":"0"},
+      {"a":"In welchem Land hat Deutschland 2014 die Fußball-WM gewonnen?", "l":["Brasilien", "Frankreich", "Katar", "Deutschland"],"c":"0"},
       {"a":"Wer ist der aktuelle Bundeskanzler von Deutschland?", "l":["Olaf Scholz","Christian Lindner","Angela Merkel","Friedrich Merz"],"c":"0"}
       ]   
   }
