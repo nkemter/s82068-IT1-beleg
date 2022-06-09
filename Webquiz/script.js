@@ -6,6 +6,8 @@ let rightAnswerClickedVariable = 0
 let wrongAnswerClickedVariable = 0
 let alreadyUsedQuestions= []  
 let randomInteger = -1
+let randomInt
+let questionIndex = 0
 const bar = document.getElementById("Bar")
 const statscontainer = document.getElementById("stats-container")
 const inhaltcontainer = document.getElementById("inhaltcontainer")
@@ -49,23 +51,55 @@ function topicButtonClicked(element){
   //speichert das thema in variabeln
   if(pressedButtonTopic == btn1){
     const selectedTopic = quizQuestion["teil-mathe"]
+    shuffleQuestions(selectedTopic)
     loadPossibleQuestions(selectedTopic)
   } 
   else if(pressedButtonTopic == btn2){
     const selectedTopic = quizQuestion["teil-internettechnologien"]
+    shuffleQuestions(selectedTopic)
     loadPossibleQuestions(selectedTopic)
   } 
   else if (pressedButtonTopic == btn3){ 
     const selectedTopic = quizQuestion["teil-allgemein"]
+    shuffleQuestions(selectedTopic)
     loadPossibleQuestions(selectedTopic)
   }
   else if(pressedButtonTopic == btn4){
     const selectedTopic = quizQuestion["online-fragen"]
     loadPossibleQuestionsREST()
-    
   }
 }
 
+function shuffleQuestions(selectedTopic){
+  
+  let shuffeledQuestionJSON = selectedTopic
+  let questionTemp
+  let answerTemp
+  let randomInt2 
+
+  for(let i = 0; i <= shuffeledQuestionJSON.length - 1; i++){
+    questionTemp = shuffeledQuestionJSON[i]
+    randomInt = Math.floor(Math.random() * shuffeledQuestionJSON.length)
+    shuffeledQuestionJSON[i] = shuffeledQuestionJSON[randomInt]
+    shuffeledQuestionJSON[randomInt] = questionTemp
+
+    for(let j = 0; j <= shuffeledQuestionJSON[randomInt].l.length -1; j++){
+      answerTemp = shuffeledQuestionJSON[randomInt].l[j]
+      randomInt2 = Math.floor(Math.random() * shuffeledQuestionJSON[randomInt].l.length)
+      if(j == shuffeledQuestionJSON[randomInt].c){
+        shuffeledQuestionJSON[randomInt].c = randomInt2
+
+      } else if (shuffeledQuestionJSON[randomInt].c == randomInt2){
+        shuffeledQuestionJSON[randomInt].c = j 
+        
+      }
+      shuffeledQuestionJSON[randomInt].l[j] = shuffeledQuestionJSON[randomInt].l[randomInt2]
+      shuffeledQuestionJSON[randomInt].l[randomInt2] = answerTemp
+    }
+  }
+  console.log(selectedTopic[randomInt].c)
+  return
+}
 
 //holt sich die fragen vom server und befüllt damit das label und die button
 function loadPossibleQuestionsREST() {
@@ -85,21 +119,29 @@ function loadPossibleQuestionsREST() {
   btn6.innerHTML = resultJSON.options[1]
   btn7.innerHTML = resultJSON.options[2]
   btn8.innerHTML = resultJSON.options[3]
-  console.log(topicSaver)
+
+  let array = [resultJSON.text, resultJSON.options[0] ]
+  console.log(resultJSON.options[0] + "antworten")
   
 }
 
 //lädt fragen aus lokalen json und befüllt damit das label und die button
 function loadPossibleQuestions(selectedTopic){
-  randomInteger = Math.floor(Math.random() * selectedTopic.length)
+  //randomInteger = Math.floor(Math.random() * selectedTopic.length)
+
+  //im moment ist die frage immer falsch
+
   topicSaver = selectedTopic
+  console.log(topicSaver + "thema2")
   //diese funktion und die speziellen string werden hier benötigt damit die 
   //mathe fragen "mathematisch" angezeigt werden
+  console.log(topicSaver + "thema3")
   if(topicSaver == quizQuestion["teil-mathe"]){
-    const questionString = "$$" + topicSaver[randomInteger].a + "$$" 
+
+    const questionString = "$$" + selectedTopic[questionIndex].a + "$$" //randomInteger
     const renderedQuestions = []
     for(let i = 0; i<=3; i++){
-      renderedQuestions[i] = "$$" + topicSaver[randomInteger].l[i] + "$$"
+      renderedQuestions[i] = "$$" + selectedTopic[questionIndex].l[i] + "$$" //randomInteger
     }
     label1.innerHTML = questionString
     btn5.innerHTML = renderedQuestions[0]
@@ -116,13 +158,15 @@ function loadPossibleQuestions(selectedTopic){
       ]
   });
   } else{
-    const questionString = topicSaver[randomInteger].a
+    console.log(selectedTopic[randomInt].a + "frage")
+    const questionString = topicSaver[questionIndex].a
     label1.innerHTML = questionString
-    btn5.innerHTML = topicSaver[randomInteger].l[0]
-    btn6.innerHTML = topicSaver[randomInteger].l[1]
-    btn7.innerHTML = topicSaver[randomInteger].l[2]
-    btn8.innerHTML = topicSaver[randomInteger].l[3]
+    btn5.innerHTML = topicSaver[questionIndex].l[0]
+    btn6.innerHTML = topicSaver[questionIndex].l[1]
+    btn7.innerHTML = topicSaver[questionIndex].l[2]
+    btn8.innerHTML = topicSaver[questionIndex].l[3]    
   }
+  questionIndex++
 }
 
 
@@ -137,7 +181,9 @@ function answerButtonClicked(element){
   } 
   //je nach online und lokal werden unterschiedliche funktionen nach dem anklicken eines buttons aufgerufen, da
   //sich sich die "reaktionen" leicht unterscheiden
+  console.log(topicSaver + "thema")
   if(topicSaver === "online-fragen"){
+    console.log(topicSaver + "thema")
     //bei online fragen muss sich die antwort kurz gemerkt werden, damit diese an den server geschickt werden kann
     //hier als int (eigentlich string), damit es in die url eingefügt werden kann 
     if(pressedButton == btn5){
@@ -151,24 +197,29 @@ function answerButtonClicked(element){
     }
     sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton)
     return
+  } else{
+    console.log(topicSaver + "thema")
+    console.log(topicSaver[randomInt].c + "lösung")
+    console.log(pressedButton.innerHTML + "gedrückt")
+    if(pressedButton.innerHTML != topicSaver[randomInt].c){ //bedingung ist falsch
+      console.log("richtige antwort")
+      rightAnswerClickedFunction(pressedButton)
+    } else{
+      console.log("falsche antwort")
+      wrongAnswerClickedFunction(pressedButton)
+    } 
   }
-  //hier muss sich die antwort bloß als element gemerkt werden, damit richtig/falsch entschieden werden kann
-  if(pressedButton == btn5){
-    rightAnswerClickedFunction(btn5)
-  }
-  else {
-    wrongAnswerClickedFunction(pressedButton)
-  }  
+
 }
 
 
 //richtige antwort angeklickt -> button wird grün und nächste frage wird nach einer sekunde geladen 
 //und button werden wieder normal
-function rightAnswerClickedFunction(btn5){
-  btn5.style.backgroundColor = 'green' 
+function rightAnswerClickedFunction(pressedButton){
+  pressedButton.style.backgroundColor = 'green' 
   disableAnswerButtons() //damit nicht mehrere fragen als beantwortet zählen, obwohl es eigentlich bloß 1 war
   setTimeout(function(){ //damit man sich die richtige antwort anschauen kann, wird die nächste frage nach einer sekunde geladen
-    btn5.style.backgroundColor = ''
+    pressedButton.style.backgroundColor = ''
     loadPossibleQuestions(topicSaver)
     activateAnswerButtons()
   }, 1000);
@@ -183,11 +234,11 @@ function rightAnswerClickedFunction(btn5){
 //falscher antwort gedrückt 
 //funktional genau wie bei den richtigen antworten, bloß das hier die falsche antwort hochgezählt wird
 function wrongAnswerClickedFunction(pressedButton){
-  btn5.style.backgroundColor = 'green'
+  pressedButton.style.backgroundColor = 'green'
   pressedButton.style.backgroundColor = 'red'
   disableAnswerButtons() 
   setTimeout(function(){
-    btn5.style.backgroundColor = ''
+    pressedButton.style.backgroundColor = ''
     pressedButton.style.backgroundColor = ''
     activateAnswerButtons() //buttons (und ihre angehängten funktionen) funktionieren erst wieder, wenn sie wieder aktiviert sind
     loadPossibleQuestions(topicSaver)
@@ -307,6 +358,8 @@ function restartClicked(){
   numberOfAnswersClicked = 0
   rightAnswerClickedVariable = 0
   wrongAnswerClickedVariable = 0
+  questionIndex = 0
+  shuffleQuestions()
   activateAnswerButtons()//fixt ein bug, dass answerbutton deaktiviert sind
   btn5.innerHTML = "A"
   btn6.innerHTML = "B"
@@ -317,22 +370,22 @@ function restartClicked(){
 //lokale fragen
 const quizQuestion = { 
     "teil-mathe": [
-      {"a":"(x^2)+(x^2)", "l":["2x^2","x^4","x^8","2x^4"]},
-      {"a":"x^2*x^2", "l":["x^4","x^2","2x^2","4x"]},
-      {"a":"(x^2)*(x^3)", "l":["x^2*x^3","x^5","5x","x^6"]},
-      {"a":"77+33", "l":["110","100", "103", "2541"]}
+      {"a":"(x^2)+(x^2)", "l":["2x^2","x^4","x^8","2x^4"],"c":"0"},
+      {"a":"x^2*x^2", "l":["x^4","x^2","2x^2","4x"],"c":"0"},
+      {"a":"(x^2)*(x^3)", "l":["x^2*x^3","x^5","5x","x^6"],"c":"0"},
+      {"a":"77+33", "l":["110","100", "103", "2541"],"c":"0"}
       ],
     "teil-internettechnologien": [
-      {"a":"Welche Authentifizierung bietet HTTP", "l":["Digest Access Authentication","OTP","OAuth","2-Faktor-Authentifizierung"]},
-      {"a":"Welches Transportprotokoll eignet sich für zeitkritische Übertragungen", "l":["UDP","TCP","HTTP","Fast Retransmit"]},
-      {"a":"Wann begann das Internet?", "l":["1969"," 1950","1970","2000"]},
-      {"a":"Wie viele Menschen haben 2021 Internetzugang?", "l":["4,1 Milliarden", "6 Milliarden", "2 Milliarden", "3,4 Milliarden"]}
+      {"a":"Welche Authentifizierung bietet HTTP", "l":["Digest Access Authentication","OTP","OAuth","2-Faktor-Authentifizierung"],"c":"0"},
+      {"a":"Welches Transportprotokoll eignet sich für zeitkritische Übertragungen", "l":["UDP","TCP","HTTP","Fast Retransmit"],"c":"0"},
+      {"a":"Wann begann das Internet?", "l":["1969"," 1950","1970","2000"],"c":"0"},
+      {"a":"Wie viele Menschen haben 2021 Internetzugang?", "l":["4,1 Milliarden", "6 Milliarden", "2 Milliarden", "3,4 Milliarden"],"c":"0"}
       ],
     "teil-allgemein": [
-      {"a":"Karl der Große, Geburtsjahr", "l":["747","828","650","1150"]},
-      {"a":"Wer ist der aktuelle Schachweltmeister?", "l":["Magnus Carlsen","Hikaru Nakamura","Ding Liren","Fabiano Caruana"]},
-      {"a":"In welchem Land hat Deutschland 2014 die Fußball-WM gewonnen?", "l":["Brasilien", "Frankreich", "Katar",]},
-      {"a":"Wer ist der aktuelle Bundeskanzler von Deutschland?", "l":["Olaf Scholz","Christian Lindner","Angela Merkel","Friedrich Merz"]}
+      {"a":"Karl der Große, Geburtsjahr", "l":["747","828","650","1150"],"c":"0"},
+      {"a":"Wer ist der aktuelle Schachweltmeister?", "l":["Magnus Carlsen","Hikaru Nakamura","Ding Liren","Fabiano Caruana"],"c":"0"},
+      {"a":"In welchem Land hat Deutschland 2014 die Fußball-WM gewonnen?", "l":["Brasilien", "Frankreich", "Katar",],"c":"0"},
+      {"a":"Wer ist der aktuelle Bundeskanzler von Deutschland?", "l":["Olaf Scholz","Christian Lindner","Angela Merkel","Friedrich Merz"],"c":"0"}
       ]   
   }
 
