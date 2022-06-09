@@ -69,6 +69,7 @@ function topicButtonClicked(element){
   }
   else if(pressedButtonTopic == btn4){
     selectedTopic = quizQuestion["online-fragen"]
+    shuffleQuestionsREST()
     loadPossibleQuestionsREST()
   }
 }
@@ -128,13 +129,14 @@ function shuffleQuestionsREST(){
 //holt sich die fragen vom server und befüllt damit das label und die button
 function loadPossibleQuestionsREST() {
   topicSaver = "online-fragen"
+  selectedTopic = "online-fragen"
   //bereitet die ajax abfrage vor als HMTL Request
   //der request braucht einen genauen aufbau, welcher auf der in der dokumentation angegeben wird
-  /*shuffleQuestionsREST()
+  
   console.log("wieder in REST")
   randomQuizID = orderOfQuestions[questionIndex]
-  */
-  randomQuizID = Math.floor((Math.random() * 5) +70) //Zahl noch noch nicht richtig     74, 73, 72,71, 70
+  
+  //randomQuizID = Math.floor((Math.random() * 5) +70) //Zahl noch noch nicht richtig     74, 73, 72,71, 70
   let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/' + randomQuizID.toString() //url des servers mit Fragen ID
   let xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); 
@@ -152,9 +154,6 @@ function loadPossibleQuestionsREST() {
 //lädt fragen aus lokalen json und befüllt damit das label und die button
 function loadPossibleQuestions(selectedTopic){
   //randomInteger = Math.floor(Math.random() * selectedTopic.length)
-
-  //im moment ist die frage immer falsch
-
   topicSaver = selectedTopic
   //diese funktion und die speziellen string werden hier benötigt damit die 
   //mathe fragen "mathematisch" angezeigt werden, dafür müssen die antworten und frage in "$$" eingeschlossen werden
@@ -216,6 +215,7 @@ function answerButtonClicked(element){
     } else {
       pressedButtonAsInt = 3
     }
+    console.log(pressedButtonAsInt)
     sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton)
     return
   } else{
@@ -298,12 +298,14 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
     //richtige anwort wird atm nicht gezeigt, da dafür neue abfragen nötig wären 
     wrongAnswerClickedVariable++ 
     numberOfAnswersClicked++
+    console.log("falsch")
     disableAnswerButtons()
     moveProgressBar()
+    questionIndex++ 
     setTimeout(function(){
       pressedButton.style.backgroundColor = ''
       activateAnswerButtons() //buttons (und ihre angehängten funktionen) funktionieren erst wieder, wenn sie wieder aktiviert sind
-      loadPossibleQuestionsREST(topicSaver)
+      loadPossibleQuestionsREST()
     }, 1000);
     checkIfEnoughAnswers()
   }
@@ -312,15 +314,17 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
     rightAnswerClickedVariable++
     numberOfAnswersClicked++
     moveProgressBar()
-    
+    questionIndex++ 
+    console.log("richtig")
     setTimeout(function(){
       pressedButton.style.backgroundColor = ''
       activateAnswerButtons() //buttons (und ihre angehängten funktionen) funktionieren erst wieder, wenn sie wieder aktiviert sind
-      loadPossibleQuestionsREST(topicSaver)
+      console.log("gleoch problem")
+      loadPossibleQuestionsREST()
     }, 1000);
     checkIfEnoughAnswers()
   }
-  questionIndex++ 
+  
 }
 
 //Progressbar, stellt den Fortschritt dar
@@ -381,10 +385,8 @@ function restartClicked(){
   rightAnswerClickedVariable = 0
   wrongAnswerClickedVariable = 0
   questionIndex = 0
-  console.log("ich bin bei neustart")
-  //shuffleQuestions()
+  orderOfQuestions = []
   activateAnswerButtons()//fixt ein bug, dass answerbutton deaktiviert sind
-
   btn5.innerHTML = "A"
   btn6.innerHTML = "B"
   btn7.innerHTML = "C"
