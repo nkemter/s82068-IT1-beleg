@@ -7,10 +7,11 @@ let rightAnswerClickedVariable = 0
 let wrongAnswerClickedVariable = 0
 let alreadyUsedQuestions= []  
 let orderOfQuestions = []
+let orderOfAnswers = []
 let randomInteger = -1
 let randomInt
 let questionIndex = 0
-const NUMBER_OF_QUESTIONS_REST = 5
+let NUMBER_OF_QUESTIONS_REST
 const bar = document.getElementById("Bar")
 const statscontainer = document.getElementById("stats-container")
 const inhaltcontainer = document.getElementById("inhaltcontainer")
@@ -69,6 +70,7 @@ function topicButtonClicked(element){
   }
   else if(pressedButtonTopic == btn4){
     selectedTopic = quizQuestion["online-fragen"]
+    NUMBER_OF_QUESTIONS_REST = 5
     shuffleQuestionsREST()
     loadPossibleQuestionsREST()
   }
@@ -119,11 +121,8 @@ function shuffleQuestionsREST(){
     if(!orderOfQuestions.includes(randomInt3)){
       orderOfQuestions[i] = randomInt3
       i++
-      console.log(i+ "i")
-      console.log(randomInt3)
     }
   }
-  console.log("bin hier fertig")
 }
 
 //holt sich die fragen vom server und befüllt damit das label und die button
@@ -132,10 +131,8 @@ function loadPossibleQuestionsREST() {
   selectedTopic = "online-fragen"
   //bereitet die ajax abfrage vor als HMTL Request
   //der request braucht einen genauen aufbau, welcher auf der in der dokumentation angegeben wird
-  
   console.log("wieder in REST")
   randomQuizID = orderOfQuestions[questionIndex]
-  
   //randomQuizID = Math.floor((Math.random() * 5) +70) //Zahl noch noch nicht richtig     74, 73, 72,71, 70
   let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/' + randomQuizID.toString() //url des servers mit Fragen ID
   let xhr = new XMLHttpRequest();
@@ -145,11 +142,28 @@ function loadPossibleQuestionsREST() {
   let resultJSON = JSON.parse(xhr.responseText) //lädt antwort in json und danach in label und button
                                                 //die ursprüngliche antwort ist ein string in form eines json, welches umgewandelt wird
   label1.innerHTML = resultJSON.text
+                                //passt die anzahl der tauschaktionen der nachfolgenden shuffle funktion 
+                               //(für fragen wird es wieder auf anzahl der fragen angepasst, damit dies weiter klappt)
+  shuffleAnswersREST()
   btn5.innerHTML = resultJSON.options[0]
   btn6.innerHTML = resultJSON.options[1]
   btn7.innerHTML = resultJSON.options[2]
   btn8.innerHTML = resultJSON.options[3]
 }
+//irgendwas klappt noch nicht
+function shuffleAnswersREST(){
+
+  for(let i = 0; i < 4; i++){
+    let randomInt4 = Math.floor((Math.random() * 3))
+    if(!orderOfAnswers.includes(randomInt4)){
+      orderOfAnswers[i] = randomInt4
+      i++
+      console.log(i+ "i")
+      console.log(randomInt4)
+    }
+  }
+}
+
 
 //lädt fragen aus lokalen json und befüllt damit das label und die button
 function loadPossibleQuestions(selectedTopic){
