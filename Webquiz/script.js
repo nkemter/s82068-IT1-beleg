@@ -6,9 +6,11 @@ let numberOfAnswersClicked = 0
 let rightAnswerClickedVariable = 0
 let wrongAnswerClickedVariable = 0
 let alreadyUsedQuestions= []  
+let orderOfQuestions = []
 let randomInteger = -1
 let randomInt
 let questionIndex = 0
+const NUMBER_OF_QUESTIONS_REST = 5
 const bar = document.getElementById("Bar")
 const statscontainer = document.getElementById("stats-container")
 const inhaltcontainer = document.getElementById("inhaltcontainer")
@@ -71,28 +73,34 @@ function topicButtonClicked(element){
   }
 }
 
+//diese funktion tauscht, nachdem ein thema festgelegt wurde, zu erst die reihenfolge der fragen 
+//und danach tauscht es die antwortmöglichkeiten im button
+
 function shuffleQuestions(selectedTopic){
   
   let shuffledQuestionJSON = selectedTopic
-  let questionTemp
+  let questionTemp //prinzipiell bräuchte man bloß eine temp variable, ist aber so übersichtlicher
   let answerTemp
   let randomInt2 
-
+  
+  //zuerst werden die fragen getauscht
   for(let i = 0; i <= shuffledQuestionJSON.length - 1; i++){
     questionTemp = shuffledQuestionJSON[i]
     randomInt = Math.floor(Math.random() * shuffledQuestionJSON.length)
-    shuffledQuestionJSON[i] = shuffledQuestionJSON[randomInt]
+    //es ist quasi ein normaler dreieckstausch über eine temp variable
+    shuffledQuestionJSON[i] = shuffledQuestionJSON[randomInt] 
     shuffledQuestionJSON[randomInt] = questionTemp
 
+    //auch hier ist es ein normaler dreieckstausch über eine temp variable
+    //bloß das hier noch die richtige antwort mit erhalten bleiben muss. dies passiert im if teil
+    //-> feld der richtigen antwort wird verschoben -> lösungsfeld auch
     for(let j = 0; j <= shuffledQuestionJSON[randomInt].l.length -1; j++){
       answerTemp = shuffledQuestionJSON[randomInt].l[j]
       randomInt2 = Math.floor(Math.random() * shuffledQuestionJSON[randomInt].l.length)
       if(j == shuffledQuestionJSON[randomInt].c){
         shuffledQuestionJSON[randomInt].c = randomInt2
-
       } else if (shuffledQuestionJSON[randomInt].c == randomInt2){
         shuffledQuestionJSON[randomInt].c = j 
-        
       }
       shuffledQuestionJSON[randomInt].l[j] = shuffledQuestionJSON[randomInt].l[randomInt2]
       shuffledQuestionJSON[randomInt].l[randomInt2] = answerTemp
@@ -102,12 +110,31 @@ function shuffleQuestions(selectedTopic){
   return
 }
 
+
+function shuffleQuestionsREST(){
+  let i = 0
+  while(NUMBER_OF_QUESTIONS_REST > i) {
+    let randomInt3 = Math.floor((Math.random() * 5) +70)
+    if(!orderOfQuestions.includes(randomInt3)){
+      orderOfQuestions[i] = randomInt3
+      i++
+      console.log(i+ "i")
+      console.log(randomInt3)
+    }
+  }
+  console.log("bin hier fertig")
+}
+
 //holt sich die fragen vom server und befüllt damit das label und die button
 function loadPossibleQuestionsREST() {
   topicSaver = "online-fragen"
   //bereitet die ajax abfrage vor als HMTL Request
   //der request braucht einen genauen aufbau, welcher auf der in der dokumentation angegeben wird
-  randomQuizID = Math.floor((Math.random() * 4) +70) //Zahl noch noch nicht richtig     74, 73, 72,71, 70
+  /*shuffleQuestionsREST()
+  console.log("wieder in REST")
+  randomQuizID = orderOfQuestions[questionIndex]
+  */
+  randomQuizID = Math.floor((Math.random() * 5) +70) //Zahl noch noch nicht richtig     74, 73, 72,71, 70
   let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/' + randomQuizID.toString() //url des servers mit Fragen ID
   let xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); 
@@ -130,7 +157,7 @@ function loadPossibleQuestions(selectedTopic){
 
   topicSaver = selectedTopic
   //diese funktion und die speziellen string werden hier benötigt damit die 
-  //mathe fragen "mathematisch" angezeigt werden
+  //mathe fragen "mathematisch" angezeigt werden, dafür müssen die antworten und frage in "$$" eingeschlossen werden
   if(topicSaver == quizQuestion["teil-mathe"]){
 
     const questionString = "$$" + selectedTopic[questionIndex].a + "$$" //randomInteger
@@ -194,9 +221,6 @@ function answerButtonClicked(element){
   } else{
 
     //console.log(selectedTopic[questionIndex].c + "lösung")
-    console.log(selectedTopic[questionIndex].a+ "frage1")
-    console.log(selectedTopic[questionIndex].c + "antwort2")
-    console.log(pressedButton.innerHTML + "gedrückt")
     if(pressedButton.innerHTML == selectedTopic[questionIndex].c){//selectedTopic[questionIndex].c){ //bedingung ist falsch
       console.log("richtige antwort")
       rightAnswerClickedFunction(pressedButton)
@@ -205,7 +229,6 @@ function answerButtonClicked(element){
       wrongAnswerClickedFunction(pressedButton)
     } 
   }
-
 }
 
 
@@ -258,7 +281,7 @@ function checkIfEnoughAnswers(){
 function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton){
   //abfrage der angeklickten antwort wird vorbereitet
   let xhr = new XMLHttpRequest();
-  let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/'+ randomQuizID +'/solve'
+  let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/'+ randomQuizID +'/solve' //damit immer zufälliges quiz genommen wird
   xhr.open('POST', url, false);
   xhr.setRequestHeader("Authorization", "Basic " + window.btoa(email+":"+password));
   xhr.setRequestHeader("Content-Type", "application/json");
@@ -278,7 +301,6 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
     disableAnswerButtons()
     moveProgressBar()
     setTimeout(function(){
-      console.log("timeout ")
       pressedButton.style.backgroundColor = ''
       activateAnswerButtons() //buttons (und ihre angehängten funktionen) funktionieren erst wieder, wenn sie wieder aktiviert sind
       loadPossibleQuestionsREST(topicSaver)
@@ -298,6 +320,7 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
     }, 1000);
     checkIfEnoughAnswers()
   }
+  questionIndex++ 
 }
 
 //Progressbar, stellt den Fortschritt dar
@@ -359,7 +382,7 @@ function restartClicked(){
   wrongAnswerClickedVariable = 0
   questionIndex = 0
   console.log("ich bin bei neustart")
-  shuffleQuestions()
+  //shuffleQuestions()
   activateAnswerButtons()//fixt ein bug, dass answerbutton deaktiviert sind
 
   btn5.innerHTML = "A"
