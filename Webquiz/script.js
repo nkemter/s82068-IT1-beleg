@@ -73,29 +73,29 @@ function topicButtonClicked(element){
 
 function shuffleQuestions(selectedTopic){
   
-  let shuffeledQuestionJSON = selectedTopic
+  let shuffledQuestionJSON = selectedTopic
   let questionTemp
   let answerTemp
   let randomInt2 
 
-  for(let i = 0; i <= shuffeledQuestionJSON.length - 1; i++){
-    questionTemp = shuffeledQuestionJSON[i]
-    randomInt = Math.floor(Math.random() * shuffeledQuestionJSON.length)
-    shuffeledQuestionJSON[i] = shuffeledQuestionJSON[randomInt]
-    shuffeledQuestionJSON[randomInt] = questionTemp
+  for(let i = 0; i <= shuffledQuestionJSON.length - 1; i++){
+    questionTemp = shuffledQuestionJSON[i]
+    randomInt = Math.floor(Math.random() * shuffledQuestionJSON.length)
+    shuffledQuestionJSON[i] = shuffledQuestionJSON[randomInt]
+    shuffledQuestionJSON[randomInt] = questionTemp
 
-    for(let j = 0; j <= shuffeledQuestionJSON[randomInt].l.length -1; j++){
-      answerTemp = shuffeledQuestionJSON[randomInt].l[j]
-      randomInt2 = Math.floor(Math.random() * shuffeledQuestionJSON[randomInt].l.length)
-      if(j == shuffeledQuestionJSON[randomInt].c){
-        shuffeledQuestionJSON[randomInt].c = randomInt2
+    for(let j = 0; j <= shuffledQuestionJSON[randomInt].l.length -1; j++){
+      answerTemp = shuffledQuestionJSON[randomInt].l[j]
+      randomInt2 = Math.floor(Math.random() * shuffledQuestionJSON[randomInt].l.length)
+      if(j == shuffledQuestionJSON[randomInt].c){
+        shuffledQuestionJSON[randomInt].c = randomInt2
 
-      } else if (shuffeledQuestionJSON[randomInt].c == randomInt2){
-        shuffeledQuestionJSON[randomInt].c = j 
+      } else if (shuffledQuestionJSON[randomInt].c == randomInt2){
+        shuffledQuestionJSON[randomInt].c = j 
         
       }
-      shuffeledQuestionJSON[randomInt].l[j] = shuffeledQuestionJSON[randomInt].l[randomInt2]
-      shuffeledQuestionJSON[randomInt].l[randomInt2] = answerTemp
+      shuffledQuestionJSON[randomInt].l[j] = shuffledQuestionJSON[randomInt].l[randomInt2]
+      shuffledQuestionJSON[randomInt].l[randomInt2] = answerTemp
     }
   }
   console.log(selectedTopic[randomInt].c)
@@ -120,8 +120,6 @@ function loadPossibleQuestionsREST() {
   btn6.innerHTML = resultJSON.options[1]
   btn7.innerHTML = resultJSON.options[2]
   btn8.innerHTML = resultJSON.options[3]
-
-  let array = [resultJSON.text, resultJSON.options[0] ]
 }
 
 //lädt fragen aus lokalen json und befüllt damit das label und die button
@@ -196,9 +194,10 @@ function answerButtonClicked(element){
   } else{
 
     //console.log(selectedTopic[questionIndex].c + "lösung")
-
+    console.log(selectedTopic[questionIndex].a+ "frage1")
+    console.log(selectedTopic[questionIndex].c + "antwort2")
     console.log(pressedButton.innerHTML + "gedrückt")
-    if(pressedButton.value == pressedButton.innerHTML){//selectedTopic[questionIndex].c){ //bedingung ist falsch
+    if(pressedButton.innerHTML == selectedTopic[questionIndex].c){//selectedTopic[questionIndex].c){ //bedingung ist falsch
       console.log("richtige antwort")
       rightAnswerClickedFunction(pressedButton)
     } else{
@@ -338,6 +337,7 @@ function disableAnswerButtons(){
 }
 //... und das aktiveren der button, damit das quiz weitergehen kann
 function activateAnswerButtons(){
+  console.log("button an")
   btn5.disabled = false
   btn6.disabled = false
   btn7.disabled = false
@@ -358,21 +358,24 @@ function restartClicked(){
   rightAnswerClickedVariable = 0
   wrongAnswerClickedVariable = 0
   questionIndex = 0
+  console.log("ich bin bei neustart")
   shuffleQuestions()
   activateAnswerButtons()//fixt ein bug, dass answerbutton deaktiviert sind
+
   btn5.innerHTML = "A"
   btn6.innerHTML = "B"
   btn7.innerHTML = "C"
   btn8.innerHTML = "D"
+  console.log("ich bin bei neustart2")
 }
 
 //lokale fragen
 const quizQuestion = { 
     "teil-mathe": [
-      {"a":"(x^2)+(x^2)", "l":["2x^2","x^4","x^8","2x^4"],"c":"0"},
-      {"a":"x^2*x^2", "l":["x^4","x^2","2x^2","4x"],"c":"0"},
-      {"a":"(x^2)*(x^3)", "l":["x^2*x^3","x^5","5x","x^6"],"c":"0"},
-      {"a":"77+33", "l":["110","100", "103", "2541"],"c":"0"}
+      {"a":"(x^2)+(x^2)", "l":["2x^2","x^4","x^8","2x^4"],"c":"2x^2"},
+      {"a":"x^2*x^2", "l":["x^4","x^2","2x^2","4x"],"c":"x^4"},
+      {"a":"(x^2)*(x^3)", "l":["x^2*x^3","x^5","5x","x^6"],"c":"x^2*x^3"},
+      {"a":"77+33", "l":["110","100", "103", "2541"],"c":"110"}
       ],
     "teil-internettechnologien": [
       {"a":"Welche Authentifizierung bietet HTTP", "l":["Digest Access Authentication","OTP","OAuth","2-Faktor-Authentifizierung"],"c":"0"},
@@ -381,10 +384,10 @@ const quizQuestion = {
       {"a":"Wie viele Menschen haben 2021 Internetzugang?", "l":["4,1 Milliarden", "6 Milliarden", "2 Milliarden", "3,4 Milliarden"],"c":"0"}
       ],
     "teil-allgemein": [
-      {"a":"Karl der Große, Geburtsjahr", "l":["747","828","650","1150"],"c":"0"},
-      {"a":"Wer ist der aktuelle Schachweltmeister?", "l":["Magnus Carlsen","Hikaru Nakamura","Ding Liren","Fabiano Caruana"],"c":"0"},
-      {"a":"In welchem Land hat Deutschland 2014 die Fußball-WM gewonnen?", "l":["Brasilien", "Frankreich", "Katar", "Deutschland"],"c":"0"},
-      {"a":"Wer ist der aktuelle Bundeskanzler von Deutschland?", "l":["Olaf Scholz","Christian Lindner","Angela Merkel","Friedrich Merz"],"c":"0"}
+      {"a":"Karl der Große, Geburtsjahr", "l":["747","828","650","1150"],"c":"747"},
+      {"a":"Wer ist der aktuelle Schachweltmeister?", "l":["Magnus Carlsen","Hikaru Nakamura","Ding Liren","Fabiano Caruana"],"c":"Magnus Carlsen"},
+      {"a":"In welchem Land hat Deutschland 2014 die Fußball-WM gewonnen?", "l":["Brasilien", "Frankreich", "Katar", "Deutschland"],"c":"Brasilien"},
+      {"a":"Wer ist der aktuelle Bundeskanzler von Deutschland?", "l":["Olaf Scholz","Christian Lindner","Angela Merkel","Friedrich Merz"],"c":"Olaf Scholz"}
       ]   
   }
 
