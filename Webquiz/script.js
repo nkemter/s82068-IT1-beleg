@@ -7,7 +7,7 @@ let rightAnswerClickedVariable = 0
 let wrongAnswerClickedVariable = 0
 let alreadyUsedQuestions= []  
 let orderOfQuestions = []
-let orderOfAnswers = []
+let resultJSON
 let randomInteger = -1
 let randomInt
 let questionIndex = 0
@@ -113,7 +113,7 @@ function shuffleQuestions(selectedTopic){
   return
 }
 
-
+//die fragen und antworten aus der nächsten funktion müssen einzeln randomized werden, da es anders ist als lokal 
 function shuffleQuestionsREST(){
   let i = 0
   while(NUMBER_OF_QUESTIONS_REST > i) {
@@ -122,6 +122,21 @@ function shuffleQuestionsREST(){
       orderOfQuestions[i] = randomInt3
       i++
     }
+  }
+}
+
+//züfallige anordnung der antwort, leider wird hier die richtige lösung gespeichert, da die info nicht verfügbar
+//die antwort wird später geprüft
+function shuffleAnswersREST(){
+  let i = 0 
+  while(i < 4){ //4 ist anzahl der antwortmöglichkeiten
+    let randomInt4 = Math.floor((Math.random() * 4))
+    let answerTemp
+    answerTemp = resultJSON.options[randomInt4]
+    resultJSON.options[randomInt4] =  resultJSON.options[i]
+    resultJSON.options[i] = answerTemp
+    i++
+    
   }
 }
 
@@ -134,35 +149,25 @@ function loadPossibleQuestionsREST() {
   console.log("wieder in REST")
   randomQuizID = orderOfQuestions[questionIndex]
   //randomQuizID = Math.floor((Math.random() * 5) +70) //Zahl noch noch nicht richtig     74, 73, 72,71, 70
+  console.log(randomQuizID)
   let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/' + randomQuizID.toString() //url des servers mit Fragen ID
   let xhr = new XMLHttpRequest();
     xhr.open('GET', url, false); 
     xhr.setRequestHeader("Authorization", "Basic " + window.btoa(email+":"+password)) 
     xhr.send() //schickt ajax ab
-  let resultJSON = JSON.parse(xhr.responseText) //lädt antwort in json und danach in label und button
+  resultJSON = JSON.parse(xhr.responseText) //lädt antwort in json und danach in label und button
                                                 //die ursprüngliche antwort ist ein string in form eines json, welches umgewandelt wird
   label1.innerHTML = resultJSON.text
                                 //passt die anzahl der tauschaktionen der nachfolgenden shuffle funktion 
                                //(für fragen wird es wieder auf anzahl der fragen angepasst, damit dies weiter klappt)
+  console.log("ich schuffle")
   shuffleAnswersREST()
   btn5.innerHTML = resultJSON.options[0]
   btn6.innerHTML = resultJSON.options[1]
   btn7.innerHTML = resultJSON.options[2]
   btn8.innerHTML = resultJSON.options[3]
 }
-//irgendwas klappt noch nicht
-function shuffleAnswersREST(){
 
-  for(let i = 0; i < 4; i++){
-    let randomInt4 = Math.floor((Math.random() * 3))
-    if(!orderOfAnswers.includes(randomInt4)){
-      orderOfAnswers[i] = randomInt4
-      i++
-      console.log(i+ "i")
-      console.log(randomInt4)
-    }
-  }
-}
 
 
 //lädt fragen aus lokalen json und befüllt damit das label und die button
@@ -172,7 +177,6 @@ function loadPossibleQuestions(selectedTopic){
   //diese funktion und die speziellen string werden hier benötigt damit die 
   //mathe fragen "mathematisch" angezeigt werden, dafür müssen die antworten und frage in "$$" eingeschlossen werden
   if(topicSaver == quizQuestion["teil-mathe"]){
-
     const questionString = "$$" + selectedTopic[questionIndex].a + "$$" //randomInteger
     const renderedQuestions = []
     for(let i = 0; i<=3; i++){
@@ -193,10 +197,7 @@ function loadPossibleQuestions(selectedTopic){
       ]
   });
   } else{
-   /* console.log(selectedTopic[randomInt].a + "frage------------") */
     const questionString = selectedTopic[questionIndex].a
-    console.log(selectedTopic[questionIndex].a+ "frage")
-    console.log(selectedTopic[questionIndex].c + "antwort")
     label1.innerHTML = questionString
     btn5.innerHTML = selectedTopic[questionIndex].l[0]
     btn6.innerHTML = selectedTopic[questionIndex].l[1]
@@ -221,12 +222,17 @@ function answerButtonClicked(element){
     //bei online fragen muss sich die antwort kurz gemerkt werden, damit diese an den server geschickt werden kann
     //hier als int (eigentlich string), damit es in die url eingefügt werden kann 
     if(pressedButton == btn5){
+      console.log(pressedButton)
+      console.log("A")
       pressedButtonAsInt = 0
     } else if (pressedButton == btn6){
+      console.log("D")
       pressedButtonAsInt = 1
     } else if (pressedButton == btn7){
+      console.log("C")
       pressedButtonAsInt = 2
     } else {
+      console.log("D")
       pressedButtonAsInt = 3
     }
     console.log(pressedButtonAsInt)
@@ -294,19 +300,24 @@ function checkIfEnoughAnswers(){
 
 function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton){
   //abfrage der angeklickten antwort wird vorbereitet
+  //compareGivenAnswerWithOrderBefore()
+
   let xhr = new XMLHttpRequest();
+  console.log(randomQuizID)
   let url = 'https://irene.informatik.htw-dresden.de:8888/api/quizzes/'+ randomQuizID +'/solve' //damit immer zufälliges quiz genommen wird
   xhr.open('POST', url, false);
   xhr.setRequestHeader("Authorization", "Basic " + window.btoa(email+":"+password));
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.setRequestHeader("Accept", "application/json");
   console.log("ich schicke antwort")
+  console.log(pressedButtonAsInt)
   let dataToSend = "["+pressedButtonAsInt+"]"
   xhr.send(dataToSend); //abfrage wird gesendet
   let resultJSON = JSON.parse(xhr.responseText)
   //wenn antwort falsch ist, dann tut es vom prinzip, dass gleiche wie bei lokal, bloß ohne die richtige antwort zu zeigen
   // -> bewegt progress bar, zählt richtig/falsch und beendet evtl quiz
   disableAnswerButtons()
+
   if(resultJSON.success == false){
     pressedButton.style.backgroundColor = 'red'
     //richtige anwort wird atm nicht gezeigt, da dafür neue abfragen nötig wären 
@@ -333,7 +344,6 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
     setTimeout(function(){
       pressedButton.style.backgroundColor = ''
       activateAnswerButtons() //buttons (und ihre angehängten funktionen) funktionieren erst wieder, wenn sie wieder aktiviert sind
-      console.log("gleoch problem")
       loadPossibleQuestionsREST()
     }, 1000);
     checkIfEnoughAnswers()
