@@ -132,9 +132,13 @@ function shuffleAnswersREST(){
   while(i < 4){ //4 ist anzahl der antwortmöglichkeiten
     let randomInt4 = Math.floor((Math.random() * 4))
     let answerTemp
-    answerTemp = resultJSON.options[randomInt4]
+    answerTemp = shuffledResultJSON.options[randomInt4]
+    /*
     resultJSON.options[randomInt4] =  resultJSON.options[i]
     resultJSON.options[i] = answerTemp
+    */
+    shuffledResultJSON.options[randomInt4] =  shuffledResultJSON.options[i]
+    shuffledResultJSON.options[i] = answerTemp
     i++
     
   }
@@ -155,17 +159,27 @@ function loadPossibleQuestionsREST() {
     xhr.open('GET', url, false); 
     xhr.setRequestHeader("Authorization", "Basic " + window.btoa(email+":"+password)) 
     xhr.send() //schickt ajax ab
-  resultJSON = JSON.parse(xhr.responseText) //lädt antwort in json und danach in label und button
+    shuffledResultJSON = JSON.parse(xhr.responseText)
+    //resultJSON = JSON.parse(xhr.responseText) //lädt antwort in json und danach in label und button
                                                 //die ursprüngliche antwort ist ein string in form eines json, welches umgewandelt wird
-  label1.innerHTML = resultJSON.text
+  //label1.innerHTML = resultJSON.text
                                 //passt die anzahl der tauschaktionen der nachfolgenden shuffle funktion 
                                //(für fragen wird es wieder auf anzahl der fragen angepasst, damit dies weiter klappt)
+  
+  resultJSON = JSON.parse(xhr.responseText)
+  label1.innerHTML = shuffledResultJSON.text
   console.log("ich schuffle")
   shuffleAnswersREST()
+  /*
   btn5.innerHTML = resultJSON.options[0]
   btn6.innerHTML = resultJSON.options[1]
   btn7.innerHTML = resultJSON.options[2]
-  btn8.innerHTML = resultJSON.options[3]
+  btn8.innerHTML = resultJSON.options[3] 
+  */
+  btn5.innerHTML = shuffledResultJSON.options[0]
+  btn6.innerHTML = shuffledResultJSON.options[1]
+  btn7.innerHTML = shuffledResultJSON.options[2]
+  btn8.innerHTML = shuffledResultJSON.options[3] 
 }
 
 
@@ -222,17 +236,12 @@ function answerButtonClicked(element){
     //bei online fragen muss sich die antwort kurz gemerkt werden, damit diese an den server geschickt werden kann
     //hier als int (eigentlich string), damit es in die url eingefügt werden kann 
     if(pressedButton == btn5){
-      console.log(pressedButton)
-      console.log("A")
       pressedButtonAsInt = 0
     } else if (pressedButton == btn6){
-      console.log("D")
       pressedButtonAsInt = 1
     } else if (pressedButton == btn7){
-      console.log("C")
       pressedButtonAsInt = 2
     } else {
-      console.log("D")
       pressedButtonAsInt = 3
     }
     console.log(pressedButtonAsInt)
@@ -300,7 +309,7 @@ function checkIfEnoughAnswers(){
 
 function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton){
   //abfrage der angeklickten antwort wird vorbereitet
-  //compareGivenAnswerWithOrderBefore()
+  pressedButtonAsInt = compareGivenAnswerWithOrderBefore(pressedButton)
 
   let xhr = new XMLHttpRequest();
   console.log(randomQuizID)
@@ -349,6 +358,22 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
     checkIfEnoughAnswers()
   }
   
+}
+
+function compareGivenAnswerWithOrderBefore(pressedButton){
+  let index =0
+  console.log(pressedButton+"gedrückt")
+  console.log(pressedButton.innerHTML+"im button")
+  console.log(shuffledResultJSON.options[index]+"")
+  console.log(resultJSON.options[index]+"")
+  while(true){
+    //if(pressedButton.innerHTML == resultJSON.options[i]){
+    
+    if(pressedButton.innerHTML == resultJSON.options[index]){
+      return index
+    }
+    index++
+  }
 }
 
 //Progressbar, stellt den Fortschritt dar
