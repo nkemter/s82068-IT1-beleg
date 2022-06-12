@@ -110,7 +110,6 @@ function shuffleQuestions(selectedTopic){
       shuffledQuestionJSON[randomInt].l[randomInt2] = answerTemp
     }
   }
-  console.log(selectedTopic[randomInt].c)
   return
 }
 
@@ -230,10 +229,8 @@ function answerButtonClicked(element){
     return
   } else{
     if(pressedButton.innerHTML == selectedTopic[questionIndex].c){
-      console.log("richtige antwort")
       rightAnswerClickedFunction(pressedButton)
     } else{
-      console.log("falsche antwort")
       wrongAnswerClickedFunction(pressedButton)
     } 
   }
@@ -256,7 +253,9 @@ function rightAnswerClickedFunction(pressedButton){
   questionIndex++
   moveProgressBar()
   //außerdem checkt es, ob "genug" fragen beantwortet wurden sind und wenn ja lädt es die statistik
-  checkIfEnoughAnswers()
+  setTimeout(function(){
+    checkIfEnoughAnswers()
+  }, 1000);
 }
 
 //falscher antwort gedrückt 
@@ -275,7 +274,9 @@ function wrongAnswerClickedFunction(pressedButton){
   wrongAnswerClickedVariable++
   questionIndex++
   moveProgressBar()
-  checkIfEnoughAnswers()
+  setTimeout(function(){
+    checkIfEnoughAnswers()
+  }, 1000);
 }
 
 //wenn entweder keine fragen mehr im lokalen json sind oder 5 fragen beantwortet wurden, wird die statistik geladen
@@ -298,10 +299,9 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
   let dataToSend = "["+pressedButtonAsInt+"]" //die antwort muss bestimmt eingepacht werden, damit der server es annimmt
   xhr.send(dataToSend); //abfrage wird gesendet
   let resultJSON = JSON.parse(xhr.responseText)
+  disableAnswerButtons()
   //wenn antwort falsch ist, dann tut es vom prinzip, dass gleiche wie bei lokal, bloß ohne die richtige antwort zu zeigen
   // -> bewegt progress bar, zählt richtig/falsch und beendet evtl quiz
-  disableAnswerButtons()
-
   if(resultJSON.success == false){
     pressedButton.style.backgroundColor = 'red'
     //richtige anwort wird atm nicht gezeigt, da dafür neue abfragen nötig wären 
@@ -315,7 +315,9 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
       activateAnswerButtons() //buttons (und ihre angehängten funktionen) funktionieren erst wieder, wenn sie wieder aktiviert sind
       loadPossibleQuestionsREST()
     }, 1000);
-    checkIfEnoughAnswers()
+    setTimeout(function(){
+      checkIfEnoughAnswers()
+    }, 1000);
   }
   else { 
     pressedButton.style.backgroundColor = 'green'
@@ -323,13 +325,14 @@ function sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedBu
     numberOfAnswersClicked++
     moveProgressBar()
     questionIndex++ 
-    console.log("richtig")
     setTimeout(function(){
       pressedButton.style.backgroundColor = ''
       activateAnswerButtons() //buttons (und ihre angehängten funktionen) funktionieren erst wieder, wenn sie wieder aktiviert sind
       loadPossibleQuestionsREST()
     }, 1000);
-    checkIfEnoughAnswers()
+    setTimeout(function(){
+      checkIfEnoughAnswers()
+    }, 1000);
   }
   
 }
