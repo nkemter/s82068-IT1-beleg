@@ -12,6 +12,7 @@ let randomInteger = -1
 let randomInt
 let questionIndex = 0
 let NUMBER_OF_QUESTIONS_REST
+let rightButtonName 
 const bar = document.getElementById("Bar")
 const statscontainer = document.getElementById("stats-container")
 const inhaltcontainer = document.getElementById("inhaltcontainer")
@@ -172,16 +173,40 @@ function loadPossibleQuestions(selectedTopic){
   //diese funktion und die speziellen string werden hier benötigt damit die 
   //mathe fragen "mathematisch" angezeigt werden, dafür müssen die antworten und frage in "$$" eingeschlossen werden
   if(topicSaver == quizQuestion["teil-mathe"]){
-    const questionString = "$$" + selectedTopic[questionIndex].a + "$$" 
+   /* const questionString = "$$" + selectedTopic[questionIndex].a + "$$" 
     const renderedQuestions = []
     for(let i = 0; i<=3; i++){
       renderedQuestions[i] = "$$" + selectedTopic[questionIndex].l[i] + "$$" //frage, die laut random liste dran ist, 
     }                                                   //bekommt seine bereits zufälligen fragen für katex vorbereitet
+    
     label1.innerHTML = questionString
     btn5.innerHTML = renderedQuestions[0]
     btn6.innerHTML = renderedQuestions[1]
     btn7.innerHTML = renderedQuestions[2]
     btn8.innerHTML = renderedQuestions[3]
+    */
+    
+    const questionString = selectedTopic[questionIndex].a //frage, die laut random liste dran ist, bekommt seine random fragen in button
+    label1.innerHTML = questionString
+    btn5.innerHTML = selectedTopic[questionIndex].l[0]
+    btn6.innerHTML = selectedTopic[questionIndex].l[1]
+    btn7.innerHTML = selectedTopic[questionIndex].l[2]
+    btn8.innerHTML = selectedTopic[questionIndex].l[3] 
+    let rightAnswerButton
+    let btnID ="" 
+    for(let i = 0; i <= 3; i++){
+  
+      if(selectedTopic[questionIndex].l[i] == selectedTopic[questionIndex].c){
+        
+        i+=5
+        btnID = "btn-" + i
+        console.log(btnID)
+        rightButtonName = document.getElementById(btnID)
+        console.log("richtige antwort "+rightButtonName.innerHTML)
+        break
+      }
+    }
+
     renderMathInElement(document.body, {
       delimiters: [
           {left: "$$", right: "$$", display: true},
@@ -228,7 +253,8 @@ function answerButtonClicked(element){
     sendButtonPressedToServerAndRecieveAnswer(pressedButtonAsInt, pressedButton) //hier wird die antwort ausgewertet
     return
   } else{
-    if(pressedButton.innerHTML == selectedTopic[questionIndex].c){
+    console.log(pressedButton.innerHTML)
+    if(pressedButton == rightButtonName){
       rightAnswerClickedFunction(pressedButton)
     } else{
       wrongAnswerClickedFunction(pressedButton)
@@ -415,11 +441,12 @@ function restartClicked(){
 //lokale fragen
 const quizQuestion = { 
     "teil-mathe": [
-      {"a":"(x^2)+(x^2)", "l":["2x^2","x^4","x^8","2x^4"],"c":"2x^2"},
-      {"a":"x^2*x^2", "l":["x^4","x^2","2x^2","4x"],"c":"x^4"},
-      {"a":"(x^2)*(x^3)", "l":["x^2*x^3","x^5","5x","x^6"],"c":"x^2*x^3"},
+      {"a":"$$(x^2)+(x^2)$$", "l":["$$2x^2$$","$$x^4$$","$$x^8$$","$$2x^4$$"],"c":"$$2x^2$$"},
+      {"a":"$$x^2*x^2$$", "l":["$$x^4$$","$$x^2$$","$$2x^2$$","$$4x$$"],"c":"$$x^4$$"},
+      {"a":"$$(x^2)*(x^3)$$", "l":["$$x^2*x^3$$","$$x^5$$","$$5x$$","$$x^6$$"],"c":"$$x^2*x^3$$"},
       {"a":"77+33", "l":["110","100", "103", "2541"],"c":"110"}
-      ],
+      ], 
+    
     "teil-internettechnologien": [
       {"a":"Welche Authentifizierung bietet HTTP", "l":["Digest Access Authentication","OTP","OAuth","2-Faktor-Authentifizierung"],"c":"0"},
       {"a":"Welches Transportprotokoll eignet sich für zeitkritische Übertragungen", "l":["UDP","TCP","HTTP","Fast Retransmit"],"c":"0"},
