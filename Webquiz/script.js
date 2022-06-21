@@ -170,34 +170,20 @@ function loadPossibleQuestionsREST() {
 function loadPossibleQuestions(selectedTopic){
   //randomInteger = Math.floor(Math.random() * selectedTopic.length)
   topicSaver = selectedTopic
-  //diese funktion und die speziellen string werden hier benötigt damit die 
-  //mathe fragen "mathematisch" angezeigt werden, dafür müssen die antworten und frage in "$$" eingeschlossen werden
+  
   if(topicSaver == quizQuestion["teil-mathe"]){
-   /* const questionString = "$$" + selectedTopic[questionIndex].a + "$$" 
-    const renderedQuestions = []
-    for(let i = 0; i<=3; i++){
-      renderedQuestions[i] = "$$" + selectedTopic[questionIndex].l[i] + "$$" //frage, die laut random liste dran ist, 
-    }                                                   //bekommt seine bereits zufälligen fragen für katex vorbereitet
-    
-    label1.innerHTML = questionString
-    btn5.innerHTML = renderedQuestions[0]
-    btn6.innerHTML = renderedQuestions[1]
-    btn7.innerHTML = renderedQuestions[2]
-    btn8.innerHTML = renderedQuestions[3]
-    */
-    
     const questionString = selectedTopic[questionIndex].a //frage, die laut random liste dran ist, bekommt seine random fragen in button
     label1.innerHTML = questionString
     btn5.innerHTML = selectedTopic[questionIndex].l[0]
     btn6.innerHTML = selectedTopic[questionIndex].l[1]
     btn7.innerHTML = selectedTopic[questionIndex].l[2]
     btn8.innerHTML = selectedTopic[questionIndex].l[3] 
+    
+    //merkt sich den richtigen button, damit bei "antwort geklick" ein vergleich stattfinden kann
     let rightAnswerButton
     let btnID ="" 
     for(let i = 0; i <= 3; i++){
-  
       if(selectedTopic[questionIndex].l[i] == selectedTopic[questionIndex].c){
-        
         i+=5
         btnID = "btn-" + i
         console.log(btnID)
@@ -206,7 +192,8 @@ function loadPossibleQuestions(selectedTopic){
         break
       }
     }
-
+  //diese funktion und die speziellen string werden hier benötigt damit die 
+  //mathe fragen "mathematisch" angezeigt werden, dafür müssen die antworten und frage in "$$" eingeschlossen werden
     renderMathInElement(document.body, {
       delimiters: [
           {left: "$$", right: "$$", display: true},
@@ -223,6 +210,18 @@ function loadPossibleQuestions(selectedTopic){
     btn6.innerHTML = selectedTopic[questionIndex].l[1]
     btn7.innerHTML = selectedTopic[questionIndex].l[2]
     btn8.innerHTML = selectedTopic[questionIndex].l[3]    
+    let rightAnswerButton
+    let btnID ="" 
+    for(let i = 0; i <= 3; i++){
+      if(selectedTopic[questionIndex].l[i] == selectedTopic[questionIndex].c){
+        i+=5
+        btnID = "btn-" + i
+        console.log(btnID)
+        rightButtonName = document.getElementById(btnID)
+        console.log("richtige antwort "+rightButtonName.innerHTML)
+        break
+      }
+    }
   }
 }
 
@@ -254,6 +253,7 @@ function answerButtonClicked(element){
     return
   } else{
     console.log(pressedButton.innerHTML)
+    console.log(rightButtonName)
     if(pressedButton == rightButtonName){
       rightAnswerClickedFunction(pressedButton)
     } else{
